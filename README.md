@@ -114,7 +114,7 @@ The main purpose of this repository is to study whether adding compressed global
 
 ## Technical report
 
-The accompanying technical report provides:
+The accompanying technical report **Numerical_Optimization.pdf** provides:
 
 * formal problem definition,
 * mathematical derivation of the baseline and context-aware systems,
