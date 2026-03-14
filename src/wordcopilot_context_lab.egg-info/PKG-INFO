@@ -1,0 +1,200 @@
+Metadata-Version: 2.4
+Name: wordcopilot-context-lab
+Version: 0.1.0
+Summary: Document-grounded long-context evaluation lab for Word Copilot-style interviews
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+
+# Word Copilot Context Lab
+
+A weekend project tailored for a Microsoft Word Copilot / Applied Scientist interview.
+
+## What this project shows
+
+This repository demonstrates that you can:
+
+- frame a real product problem around long-document assistance,
+- build an end-to-end experimental pipeline,
+- design **offline evaluation** beyond a single metric,
+- reason about **local vs global context**,
+- connect research intuition to product constraints such as latency and context budget.
+
+The core idea is simple:
+
+> A query over a long document should not rely only on the single most relevant chunk.
+> It should combine **local evidence** with a **compressed global document signal**.
+
+That is directly relevant to writing copilots, long-context LLM systems, and document-grounded AI features.
+
+## Problem statement
+
+Given a long document and a user question such as:
+
+- "What decisions were made?"
+- "Summarize the budget risks."
+- "What are the next steps?"
+
+build two systems:
+
+1. **Baseline**: retrieve the top chunk and answer from it.
+2. **Context-aware**: retrieve top chunks, add a compact global document summary, and pack the context under a token budget using MMR-style selection.
+
+## Real dataset
+
+The project uses **QMSum** (query-based meeting summarization), loaded through the Hugging Face `datasets` library.
+
+Why QMSum?
+
+- long multi-speaker documents,
+- realistic user-like queries,
+- grounded reference answers,
+- good proxy for Copilot-style document assistance.
+
+## Repository structure
+
+```text
+wordcopilot-context-lab/
+├── README.md
+├── requirements.txt
+├── .gitignore
+├── configs/
+│   └── default.yaml
+├── data/
+│   └── README.md
+├── scripts/
+│   ├── run_experiment.py
+│   ├── evaluate_predictions.py
+│   └── demo_example.py
+├── src/
+│   └── context_lab/
+│       ├── __init__.py
+│       ├── chunking.py
+│       ├── config.py
+│       ├── data.py
+│       ├── eval.py
+│       ├── generation.py
+│       ├── pipeline.py
+│       ├── retrieval.py
+│       ├── selection.py
+│       └── utils.py
+└── tests/
+    └── test_selection.py
+```
+
+## Method
+
+### Baseline
+
+- split document into chunks,
+- embed chunks and query,
+- retrieve top-1 chunk,
+- generate answer from that chunk.
+
+### Context-aware system
+
+- split document into chunks,
+- retrieve top-k candidate chunks,
+- compute a **global document summary** with a lightweight heuristic,
+- pack chunks under a context budget with **MMR**,
+- answer using both:
+  - local retrieved chunks,
+  - global compressed document context.
+
+## Evaluation
+
+The evaluation script reports:
+
+- **ROUGE-L** against reference answers,
+- **support score**: how well prediction sentences are supported by retrieved context,
+- **term recall**: how much important document terminology appears in the answer,
+- **latency**.
+
+This is intentional: in product work, one metric is rarely enough.
+
+## Quick start
+
+### 1. Create environment
+
+```bash
+python -m venv .venv
+source .venv/bin/activate   # macOS/Linux
+# or
+.venv\Scripts\activate      # Windows
+pip install -r requirements.txt
+```
+
+### 2. Run a small experiment
+
+```bash
+python scripts/run_experiment.py \
+  --config configs/default.yaml \
+  --split validation \
+  --max-samples 20 \
+  --system baseline
+```
+
+```bash
+python scripts/run_experiment.py \
+  --config configs/default.yaml \
+  --split validation \
+  --max-samples 20 \
+  --system context_aware
+```
+
+### 3. Evaluate
+
+```bash
+python scripts/evaluate_predictions.py \
+  --predictions outputs/context_aware_validation_predictions.jsonl
+```
+
+### 4. Demo a single example
+
+```bash
+python scripts/demo_example.py --config configs/default.yaml --example-index 0
+```
+
+## Good interview talking points
+
+### Research-to-product bridge
+
+Say that your design is inspired by a recurring pattern in document NLP:
+
+- **local evidence** helps answer the immediate question,
+- **global context** improves consistency, topic awareness, and disambiguation,
+- the main engineering challenge is choosing the right context under a budget.
+
+### Why this is a strong weekend project
+
+It shows:
+
+- experimental design,
+- grounding and evaluation rigor,
+- awareness of latency/quality tradeoffs,
+- practical use of retrieval + generation,
+- product thinking, not just model hacking.
+
+### Where your math background helps
+
+You can explicitly say that the context packer is an optimization problem:
+
+- maximize relevance,
+- maximize coverage,
+- minimize redundancy,
+- satisfy a token budget.
+
+That is a clean way to connect numerical optimization to LLM systems.
+
+## Extension ideas
+
+- replace the generator with a better model or API-backed model,
+- add pairwise LLM-as-a-judge evaluation,
+- add A/B style slice analysis by query type,
+- add human evaluation rubrics,
+- fine-tune a reranker on query-answer relevance,
+- add a terminology consistency constraint.
+
+## A strong 2-minute pitch in the interview
+
+> I built a small document-grounded copilot benchmark using QMSum. The baseline answers from a single retrieved chunk. My improved system adds a compressed global document signal and uses an optimization-style context selector under a token budget. I evaluate with ROUGE-L, support, terminology recall, and latency. The main point is not only model quality, but how to design an end-to-end scientific loop for long-document AI features.
+

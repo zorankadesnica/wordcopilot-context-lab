@@ -1,0 +1,17 @@
+README.md
+pyproject.toml
+src/context_lab/__init__.py
+src/context_lab/chunking.py
+src/context_lab/config.py
+src/context_lab/data.py
+src/context_lab/eval.py
+src/context_lab/generation.py
+src/context_lab/pipeline.py
+src/context_lab/retrieval.py
+src/context_lab/selection.py
+src/context_lab/utils.py
+src/wordcopilot_context_lab.egg-info/PKG-INFO
+src/wordcopilot_context_lab.egg-info/SOURCES.txt
+src/wordcopilot_context_lab.egg-info/dependency_links.txt
+src/wordcopilot_context_lab.egg-info/top_level.txt
+tests/test_selection.py
