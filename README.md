@@ -1,4 +1,4 @@
-# Word Copilot Context Lab
+#  Context Lab
 
 A compact research repository for long-document, document-grounded question answering and summarization.
 
