@@ -46,18 +46,7 @@ where $s(q,d_j)$ is a dense retrieval score between the query and chunk $d_j$.
 
 The context-aware system retrieves candidate chunks and solves a budgeted selection problem:
 
-$$
-S^\star = \arg\max_{S}
-\left[
-\sum_{d_i\in S} r_i
--
-\lambda \sum_{d_i,d_j\in S}\mathrm{sim}(d_i,d_j)
-\right]
-\quad
-\text{subject to}
-\quad
-\sum_{d_i\in S}\ell(d_i)\le B.
-$$
+$$ S^\star = \arg\max_S \Big[ \sum_{d_i \in S} r_i - \lambda \sum_{d_i,d_j \in S} \mathrm{sim}(d_i,d_j) \Big] \quad \text{subject to} \quad \sum_{d_i \in S} \ell(d_i) \le B. $$
 
 Here:
 
